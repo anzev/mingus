@@ -144,9 +144,10 @@ them to the track_data."""
 		if hasattr(note, "velocity"):
 			velocity = note.velocity
 
-
-		self.track_data += self.note_off(channel, int(note) + 12,
-					velocity)
+		# Tied notes end at the last note that isn`t tied.
+		if not note.is_tied():
+			self.track_data += self.note_off(channel, int(note) + 12,
+						velocity)
 
 
 	def stop_NoteContainer(self, notecontainer):

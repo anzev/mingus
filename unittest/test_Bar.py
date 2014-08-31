@@ -120,6 +120,22 @@ class test_Bar(unittest.TestCase):
 		b + ["F", "A", "C"]
 		self.assertEqual([[0.0, ["I"]], [0.25, ["IV"]]], b.determine_progression(True))
 
+	def test_tied_notes(self):
+		b1, b2 = Bar(), Bar()
+		n = Note('G')
+		b1.place_notes('C', 4)
+		b1.place_notes('C', 4)
+		b1.place_notes('C', 4)
+		b1.place_notes(n, 4)
+		b2.place_notes(Note('G', tie_note=n), 4)
+		b2.place_notes('C', 4)
+		b2.place_notes('C', 4)
+		b2.place_notes('C', 4)
+		last_note_b1 = b1[-1][2][0]
+		first_note_b2 = b2[0][2][0]
+		self.assertTrue(last_note_b1.is_tied())
+		self.assertTrue(first_note_b2.tie_note != None)
+
 def suite():
 	return unittest.TestLoader().loadTestsFromTestCase(test_Bar)
 
