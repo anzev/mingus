@@ -1,3 +1,6 @@
-syntax: glob
 *.pyc
-*.swp
+*.sublime-*
+*.mp3
+*.ogg
+*.mid
+*.wav
