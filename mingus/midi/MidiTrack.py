@@ -34,6 +34,7 @@ from binascii import a2b_hex
 from struct import pack, unpack
 from math import log
 from MidiEvents import *
+from MidiTieNotes import MidiTieNotes
 from mingus.core.diatonic import basic_keys
 from mingus.containers.Note import Note
 
@@ -52,6 +53,7 @@ class MidiTrack():
 		self.track_data =''
 		self.set_tempo(start_bpm)
 
+		self.tie_notes = MidiTieNotes()
 
 	def end_of_track(self):
 		"""Returns the bytes for an end of track meta event."""
@@ -61,23 +63,20 @@ class MidiTrack():
 		"""Converts a Note object to a midi event and adds it \
 to the track_data. To set the channel on which to play this note, set \
 Note.channel, the same goes for Note.velocity."""
-		velocity = 64
-		channel = 1
-		if hasattr(note, "dynamics"):
-			if 'velocity' in note.dynamics:
-				velocity = note.dynamics["velocity"]
-			if 'channel' in note.dynamics:
-				channel = note.dynamics["channel"]
-		if hasattr(note, "channel"):
-			channel = note.channel
-		if hasattr(note, "velocity"):
-			velocity = note.velocity
+		channel = note.channel
+		velocity = note.velocity
 
 		if self.change_instrument:
 			self.set_instrument(channel, self.instrument)
 			self.change_instrument = False
 
-		self.track_data += self.note_on(channel, int(note) + 12, velocity)
+		if note.is_tied():
+			self.tie_notes.start(channel, note)
+
+		if not note.tie_note():
+			self.track_data += self.note_on(channel, int(note) + 12, velocity)
+		else:
+			self.tie_notes.advance(channel, note, self.tick)
 
 	def play_NoteContainer(self, notecontainer):
 		"""Converts a mingus.containers.NoteContainer to the \
@@ -103,6 +102,7 @@ to the track_data."""
 		self.set_key(bar.key)
 		for x in bar:
 			tick = int(round((1.0 / x[1] * 288)))
+			self.tick = tick
 			if x[2] is None or len(x[2]) == 0:
 				self.delay += tick
 			else:
@@ -112,7 +112,6 @@ to the track_data."""
 					self.set_deltatime(0)
 					self.set_tempo(x[2].bpm)
 				self.play_NoteContainer(x[2])
-
 				self.set_deltatime(self.int_to_varbyte(tick))
 				self.stop_NoteContainer(x[2])
 
@@ -132,23 +131,19 @@ them to the track_data."""
 
 	def stop_Note(self, note):
 		"""Adds a note_off event for note to event_track"""
-		velocity = 64
-		channel = 1
-		if hasattr(note, "dynamics"):
-			if 'velocity' in note.dynamics:
-				velocity = note.dynamics["velocity"]
-			if 'channel' in note.dynamics:
-				channel = note.dynamics["channel"]
-		if hasattr(note, "channel"):
-			channel = note.channel
-		if hasattr(note, "velocity"):
-			velocity = note.velocity
+		channel = note.channel
+		velocity = note.velocity
 
 		# Tied notes end at the last note that isn`t tied.
+		dt_tmp = self.delta_time
+		if note.is_last_tied():
+			self.set_deltatime(self.tick + self.tie_notes.remaining(channel, note))
 		if not note.is_tied():
-			self.track_data += self.note_off(channel, int(note) + 12,
-						velocity)
-
+			self.track_data += self.note_off(channel, int(note) + 12, velocity)
+			self.tie_notes.touch()
+			if note.is_last_tied():
+				self.tie_notes.stop(channel, note)
+		self.delta_time = dt_tmp
 
 	def stop_NoteContainer(self, notecontainer):
 		"""Adds note_off events for each note in the \
@@ -193,6 +188,8 @@ meta event."""
 		"""param1 and param2: 1 byte."""
 		assert event_type < 128 and event_type >= 0
 		assert channel < 16 and channel >= 0
+		self._event_written()
+
 		tc = a2b_hex("%x%x" % (event_type, channel))
 
 		if param2 is None:
@@ -208,7 +205,7 @@ meta event."""
 
 	def note_on(self, channel, note, velocity):
 		"""Returns bytes for a `note_on` event."""
-		return self.midi_event(NOTE_ON, channel, note, velocity)
+ 		return self.midi_event(NOTE_ON, channel, note, velocity)
 
 	def controller_event(self, channel, contr_nr, contr_val):
 		"""Returns the bytes for a MIDI controller event."""
@@ -311,4 +308,9 @@ value."""
 
 		return pack('%sB' % len(bytes), *bytes)
 
+	def _event_written(self):
+		'''
+		Called when a midi event is written.
+		'''
+		self.tie_notes.touch()
 

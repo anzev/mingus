@@ -45,11 +45,8 @@ to group Notes together in intervals and chords."""
 
     def __init__(self, name = 'C', octave = 4, dynamics = {}, tie_note=None):
 
-        # Note is tied to some other note in the previous bar
-        self.tie_note = tie_note
-        if tie_note:
-            self.tie_note._is_tied = True
-        self._is_tied = False
+        self.channel = dynamics.get('channel', 1)
+        self.velocity = dynamics.get('velocity', 64)
 
         if type(name) == str:
             self.set_note(name, octave, dynamics)
@@ -57,10 +54,8 @@ to group Notes together in intervals and chords."""
         # Hardcopy Note object
         elif hasattr(name, "name"):
             self.set_note(name.name, name.octave, name.dynamics)
-            if hasattr(name, "channel"):
-                    self.channel = name.channel
-            if hasattr(name, "velocity"):
-                    self.velocity = name.velocity
+            self.channel = name.channel
+            self.velocity = name.velocity
         
         # Convert from integer
         elif type(name) == int:
@@ -68,8 +63,42 @@ to group Notes together in intervals and chords."""
         else:
             raise NoteFormatError, "Don't know what to do with name object: '%s'" % name
 
+        self.tie_together(tie_note)
+
     def is_tied(self):
         return self._is_tied
+
+    def is_last_tied(self):
+        return self._tie_note != None and self._next_note == None
+
+    def tie_note(self):
+        return self._tie_note
+
+    def next_note(self):
+        return self._next_note
+
+    def tie_together(self, prev_note):
+        '''
+        Tie this note together with a previous note.
+        '''
+        self._tie_note = prev_note
+        self._is_tied = False
+        self._next_note = None
+
+        if not prev_note:
+            return
+
+        # Check if the tied note is actually on the same channel and the same value
+        if int(self) != int(prev_note) or self.channel != prev_note.channel:
+            raise NotesNotTieable("Notes not on the same channel or not of the \
+                                   same name cannot be tied together.")
+
+        # Note is tied to some other note in the previous bar
+        self._tie_note = prev_note
+        if self._tie_note:
+            self._tie_note._is_tied = True
+            self._tie_note._next_note = self
+        
 
     def set_note(self, name = 'C', octave = 4, dynamics = {}):
         """Sets the note to `name` in `octave` with `dynamics` if \
@@ -294,4 +323,5 @@ False
         return "'%s-%d'" %  (self.name, self.octave)
 
 
-    
+class NotesNotTieable(Exception):
+    pass
