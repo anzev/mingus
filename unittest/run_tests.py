@@ -51,6 +51,7 @@ import test_Bar
 import test_Track
 import test_Composition
 import test_Suite
+import test_tied_notes
 
 # MIDI TESTS HERE
 # ...
@@ -67,7 +68,7 @@ import test_MusicXML
 core = [test_notes, test_diatonic, test_intervals, test_chords, 
         test_scales, test_meter, test_progressions, test_value]
 
-containers = [test_Note, test_NoteContainers, test_Instrument,
+containers = [test_Note, test_tied_notes, test_NoteContainers, test_Instrument,
               test_Bar, test_Track, test_Composition, test_Suite]
 
 extra = [test_fft, test_tunings, test_tablature, test_MusicXML]
