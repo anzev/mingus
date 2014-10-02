@@ -72,6 +72,7 @@ Note.channel, the same goes for Note.velocity."""
 
 		if note.is_tied():
 			self.tie_notes.start(channel, note)
+			self.tie_notes.advance(channel, note, self.tick)
 
 		if not note.tie_note():
 			self.track_data += self.note_on(channel, int(note) + 12, velocity)
@@ -129,20 +130,23 @@ them to the track_data."""
 			self.play_Bar(bar)
 
 
-	def stop_Note(self, note):
+	def stop_Note(self, note, first=False):
 		"""Adds a note_off event for note to event_track"""
 		channel = note.channel
 		velocity = note.velocity
 
-		# Tied notes end at the last note that isn`t tied.
 		dt_tmp = self.delta_time
-		if note.is_last_tied():
-			self.set_deltatime(self.tick + self.tie_notes.remaining(channel, note))
+
+		# Tied notes end at the last note that isn`t tied.
+		if note.is_last_tied() and first:
+			dt = self.tie_notes.remaining(channel, note) + self.delta_time_int
+			self.set_deltatime(dt)
 		if not note.is_tied():
 			self.track_data += self.note_off(channel, int(note) + 12, velocity)
 			self.tie_notes.touch()
 			if note.is_last_tied():
 				self.tie_notes.stop(channel, note)
+
 		self.delta_time = dt_tmp
 
 	def stop_NoteContainer(self, notecontainer):
@@ -153,12 +157,11 @@ NoteContainer to the track_data."""
 		# the deltatime should be set back to zero after the 
 		# first one has been stopped
 		if len(notecontainer) <= 1:
-			[self.stop_Note(x) for x in notecontainer]
+			[self.stop_Note(x, first=True) for x in notecontainer]
 		else:
-			self.stop_Note(notecontainer[0])
+			self.stop_Note(notecontainer[0], first=True)
 			self.set_deltatime(0)
 			[self.stop_Note(x) for x in notecontainer[1:]]
-
 
 	def set_instrument(self, channel, instr, bank = 1):
 		"""Adds an program change and bank select event \
@@ -220,6 +223,7 @@ meta event."""
 		"""Sets the delta_time. Can be an integer or a \
 variable length byte."""
 		if type(delta_time) == int:
+			self.delta_time_int = delta_time
 			delta_time = self.int_to_varbyte(delta_time)
 
 		self.delta_time = delta_time
