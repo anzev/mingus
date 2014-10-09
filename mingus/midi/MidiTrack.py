@@ -167,6 +167,8 @@ NoteContainer to the track_data."""
 		"""Adds an program change and bank select event \
 to the track_data"""
 		self.track_data += self.select_bank(channel, bank)
+		self.set_deltatime(0)
+		self.delay = 0
 		self.track_data += self.program_change_event(channel, instr)
 
 	def header(self):
