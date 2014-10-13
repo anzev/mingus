@@ -180,14 +180,21 @@ Doesn't change the octave."""
 >>> a
 'A-4'
 }}}"""
-        old, o_octave = self.name, self.octave
-        self.name = intervals.from_shorthand(self.name, interval, up)
-        if up:
-            if self < Note(old, o_octave):
-                self.octave += 1
+        if type(interval) == int:
+            for _ in range(interval):
+                if up:
+                    self.augment()
+                else:
+                    self.diminish()
         else:
-            if self > Note(old, o_octave):
-                self.octave -= 1
+            old, o_octave = self.name, self.octave
+            self.name = intervals.from_shorthand(self.name, interval, up)
+            if up:
+                if self < Note(old, o_octave):
+                    self.octave += 1
+            else:
+                if self > Note(old, o_octave):
+                    self.octave -= 1
 
 
     def from_int(self, integer):
