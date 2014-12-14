@@ -57,7 +57,7 @@ class MidiTrack():
 
 	def end_of_track(self):
 		"""Returns the bytes for an end of track meta event."""
-		return "\x00\xff\x2f\x00"
+		return self.int_to_varbyte(self.delay) + "\xff\x2f\x00"
 
 	def play_Note(self, note):
 		"""Converts a Note object to a midi event and adds it \
@@ -121,6 +121,9 @@ to the track_data."""
 them to the track_data."""
 		if hasattr(track, "name"):
 			self.set_track_name(track.name)
+		if hasattr(track, "volume") and hasattr(track, "channel"):
+			self.set_volume(track.channel, track.volume)
+
 		self.delay = 0
 		instr = track.instrument
 		if hasattr(instr, "instrument_nr"):
@@ -216,6 +219,9 @@ meta event."""
 		"""Returns the bytes for a MIDI controller event."""
 		return self.midi_event(CONTROLLER, channel, contr_nr, contr_val)
 
+	def set_volume(self, channel, volume):
+		self.track_data += self.controller_event(channel, MAIN_VOLUME, volume)
+
 	def reset(self):
 		"""Resets track_data and delta_time."""
 		self.track_data = ''
@@ -254,6 +260,7 @@ controller event."""
 		mpqn = a2b_hex("%06x" % (ms_per_min / bpm))
 		return self.delta_time + META_EVENT + SET_TEMPO + \
 				"\x03" + mpqn
+
 	def set_meter(self, meter = (4,4)):
 		"""Adds a time signature event for meter to track_data"""
 		self.track_data += self.time_signature_event(meter)
@@ -319,4 +326,3 @@ value."""
 		Called when a midi event is written.
 		'''
 		self.tie_notes.touch()
-
