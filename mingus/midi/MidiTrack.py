@@ -70,13 +70,13 @@ Note.channel, the same goes for Note.velocity."""
 			self.set_instrument(channel, self.instrument)
 			self.change_instrument = False
 
-		if note.is_tied():
-			self.tie_notes.start(channel, note)
-			self.tie_notes.advance(channel, note, self.tick)
-
 		if not note.tie_note():
 			self.track_data += self.note_on(channel, int(note) + 12, velocity)
 		else:
+			self.tie_notes.advance(channel, note, self.tick)
+
+		if note.is_tied():
+			self.tie_notes.start(channel, note)
 			self.tie_notes.advance(channel, note, self.tick)
 
 	def play_NoteContainer(self, notecontainer):
