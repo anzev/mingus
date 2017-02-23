@@ -76,8 +76,9 @@ Note.channel, the same goes for Note.velocity."""
 			self.tie_notes.advance(channel, note, self.tick)
 
 		if note.is_tied():
-			self.tie_notes.start(channel, note)
-			self.tie_notes.advance(channel, note, self.tick)
+			if not (note.tie_note() and note.tie_note().is_tied()):
+				self.tie_notes.start(channel, note)
+				self.tie_notes.advance(channel, note, self.tick)
 
 	def play_NoteContainer(self, notecontainer):
 		"""Converts a mingus.containers.NoteContainer to the \
