@@ -4,8 +4,8 @@
 
 ================================================================================
 
-	Music theory Python package, test suite
-	Copyright (C) 2008, Bart Spaans
+        Music theory Python package, test suite
+        Copyright (C) 2008, Bart Spaans
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,9 +22,9 @@
 
 ================================================================================
 
-	Test suite for the music theory package. Invoke this file from the
-	command line, from within the `unittest` directory to run all the
-	testcases.
+        Test suite for the music theory package. Invoke this file from the
+        command line, from within the `unittest` directory to run all the
+        testcases.
 
 ================================================================================
 
@@ -59,19 +59,18 @@ import test_tied_notes
 import test_fft
 import test_tablature
 import test_tunings
-import test_MusicXML
 
-# See run_fluidsynth_tests.py for FluidSynth audio tests 
+# See run_fluidsynth_tests.py for FluidSynth audio tests
 # See run_lilypond_tests.py to generate some pdf's
 
 # Add new suites here...
-core = [test_notes, test_diatonic, test_intervals, test_chords, 
+core = [test_notes, test_diatonic, test_intervals, test_chords,
         test_scales, test_meter, test_progressions, test_value]
 
 containers = [test_Note, test_tied_notes, test_NoteContainers, test_Instrument,
               test_Bar, test_Track, test_Composition, test_Suite]
 
-extra = [test_fft, test_tunings, test_tablature, test_MusicXML]
+extra = [test_fft, test_tunings, test_tablature,]
 
 # Run all tests
 suite = unittest.TestSuite([ x.suite() for x in core + containers + extra ])

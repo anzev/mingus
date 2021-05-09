@@ -2,8 +2,8 @@
 
 ================================================================================
 
-	Mingus - Music theory Python module, core package
-	Copyright (C) 2008-2009, Bart Spaans
+        Mingus - Music theory Python module, core package
+        Copyright (C) 2008-2009, Bart Spaans
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -24,4 +24,4 @@
 """
 
 __all__ = ["notes", "diatonic", "intervals", "chords", "scales",\
-		"meter", "progressions", "mt_exceptions", "value"]
+                "meter", "progressions", "mt_exceptions", "value"]

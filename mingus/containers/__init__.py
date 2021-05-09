@@ -2,8 +2,8 @@
 
 ================================================================================
 
-	mingus - Music theory Python package, containers package
-	Copyright (C) 2008-2009, Bart Spaans
+        mingus - Music theory Python package, containers package
+        Copyright (C) 2008-2009, Bart Spaans
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -25,11 +25,10 @@
 
 """
 
-from Note import Note
-from NoteContainer import NoteContainer
-from Bar import Bar
-from Track import Track
-from Composition import Composition
-from Suite import Suite
-from Instrument import Instrument, Piano, Guitar, MidiInstrument
-
+from .Note import Note
+from .NoteContainer import NoteContainer
+from .Bar import Bar
+from .Track import Track
+from .Composition import Composition
+from .Suite import Suite
+from .Instrument import Instrument, Piano, Guitar, MidiInstrument

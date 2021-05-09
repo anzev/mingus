@@ -1,8 +1,8 @@
 """
 ================================================================================
 
-	Music theory Python package, exceptions.
-	Copyright (C) 2008-2009, Bart Spaans
+        Music theory Python package, exceptions.
+        Copyright (C) 2008-2009, Bart Spaans
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,20 +22,19 @@
 """
 
 class Error(Exception):
-	pass
+    pass
 
 class FormatError(Error):
-        pass
+    pass
 
 class NoteFormatError(Error):
-	pass
+    pass
 
 class KeyError(Error):
-	pass
+    pass
 
 class RangeError(Error):
-	pass
+    pass
 
 class FingerError(Error):
-        pass
-
+    pass

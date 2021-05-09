@@ -8,7 +8,7 @@ from mingus.containers.mt_exceptions import MeterFormatError
 import unittest
 
 class test_tied_notes(unittest.TestCase):
-    
+
     def setUp(self):
         self.bar1 = Bar()
         self.bar2 = Bar()

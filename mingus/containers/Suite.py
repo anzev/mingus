@@ -2,8 +2,8 @@
 
 ================================================================================
 
-	mingus - Music theory Python package, Suite module
-	Copyright (C) 2008-2009, Bart Spaans
+        mingus - Music theory Python package, Suite module
+        Copyright (C) 2008-2009, Bart Spaans
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,61 +22,58 @@
 
 """
 
-from mt_exceptions import UnexpectedObjectError
+from .mt_exceptions import UnexpectedObjectError
 
 
 class Suite:
-	"""The	Suite class is a datastructure that stores \
+    """The  Suite class is a datastructure that stores \
 [refMingusContainersComposition Composition] objects."""
 
-	title = 'Untitled'
-	subtitle = ''
-	author = ''
-	email = ''
-	compositions = []
+    title = 'Untitled'
+    subtitle = ''
+    author = ''
+    email = ''
+    compositions = []
 
-	def __init__(self):
-		pass
+    def __init__(self):
+        pass
 
-	def add_composition(self, composition):
-		"""Adds a [refMingusContainersComposition composition] to the suite. \
+    def add_composition(self, composition):
+        """Adds a [refMingusContainersComposition composition] to the suite. \
 Raises an !UnexpectedObjectError when the supplied argument is \
 not a [refMingusContainersComposition Composition] object. """
 
-		if not ( hasattr ( composition, "tracks") ):
-			raise UnexpectedObjectError,\
-			"Object '%s' not expected. Expecting a "\
-			"mingus.containers.Composition object." % composition
-		self.compositions.append(composition)
-                return self
+        if not ( hasattr ( composition, "tracks") ):
+            raise UnexpectedObjectError("Object '%s' not expected. Expecting a "\
+            "mingus.containers.Composition object." % composition)
+        self.compositions.append(composition)
+        return self
 
-	def set_author(self, author, email = ''):
-		"""Sets the author of the suite"""
-		self.author = author
-		self.email = email
+    def set_author(self, author, email = ''):
+        """Sets the author of the suite"""
+        self.author = author
+        self.email = email
 
-	def set_title(self, title, subtitle = ''):
-		"""Sets the title and the subtitle of the suite"""
-		self.title = title
-		self.subtitle = subtitle
+    def set_title(self, title, subtitle = ''):
+        """Sets the title and the subtitle of the suite"""
+        self.title = title
+        self.subtitle = subtitle
 
-	def __len__(self):
-		"""Overloads the len() function"""
-		return len(self.compositions)
+    def __len__(self):
+        """Overloads the len() function"""
+        return len(self.compositions)
 
-	def __getitem__(self, index):
-		"""Overloads the [] notation"""
-		return self.compositions[index]
+    def __getitem__(self, index):
+        """Overloads the [] notation"""
+        return self.compositions[index]
 
-	def __setitem__(self, index, value):
-		"""Overloads the [] = notation"""
-		if not ( hasattr ( value, "tracks") ):
-			raise UnexpectedObjectError,\
-			"Object '%s' is not expected. Expecting a "\
-			"mingus.containers.Composition object." % value
-		self.compositions[index] = value
+    def __setitem__(self, index, value):
+        """Overloads the [] = notation"""
+        if not ( hasattr ( value, "tracks") ):
+            raise UnexpectedObjectError("Object '%s' is not expected. Expecting a "\
+            "mingus.containers.Composition object." % value)
+        self.compositions[index] = value
 
-        def __add__(self, composition):
-                """Overloads the + operator for Compositions."""
-                return self.add_composition(composition)
-
+    def __add__(self, composition):
+        """Overloads the + operator for Compositions."""
+        return self.add_composition(composition)

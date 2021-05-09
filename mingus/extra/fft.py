@@ -2,8 +2,8 @@
 
 ================================================================================
 
-	mingus - Music theory Python package, fft module
-	Copyright (C) 2008-2009, Bart Spaans
+        mingus - Music theory Python package, fft module
+        Copyright (C) 2008-2009, Bart Spaans
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@
 ================================================================================
 
     The fft module can find the frequencies in raw audio data by using fast Fourier
-    transformations (supplied by numpy) and can also convert the found frequencies 
+    transformations (supplied by numpy) and can also convert the found frequencies
     to Note objects.
 
 ================================================================================
@@ -33,17 +33,17 @@ from mingus.containers.Note import Note
 from numpy.fft import fft as _fft
 import operator
 
-# Making a frequency-amplitude table 
+# Making a frequency-amplitude table
 #
 # Adapted some ideas and source from:
 # http://xoomer.virgilio.it/sam_psy/psych/sound_proc/sound_proc_python.html
 
 
-# The log function turns out to be really, really slow, which adds up quickly. 
-# So before we do any performance critical calculations we set up a cache of 
-# all the frequencies we need to look up. 
+# The log function turns out to be really, really slow, which adds up quickly.
+# So before we do any performance critical calculations we set up a cache of
+# all the frequencies we need to look up.
 _log_cache = []
-for x in xrange(129):
+for x in range(129):
     _log_cache.append(Note().from_int(x).to_hertz())
 
 _last_asked = None
@@ -55,30 +55,30 @@ Because we are dealing with ranges, this returns the nearest index."""
     begin, end = 0, 128
 
     # Most calls are sequential, this keeps track of the last value asked for
-    # so that we need to search much, much less. 
+    # so that we need to search much, much less.
     if _last_asked is not None:
         lastn, lastval = _last_asked
         if f >= lastval:
-           if f <= _log_cache[lastn]:
-               _last_asked = lastn, f
-               return lastn
-           elif f <= _log_cache[lastn + 1]:
-               _last_asked = lastn + 1, f
-               return lastn + 1
-           begin = lastn
-    
+            if f <= _log_cache[lastn]:
+                _last_asked = lastn, f
+                return lastn
+            elif f <= _log_cache[lastn + 1]:
+                _last_asked = lastn + 1, f
+                return lastn + 1
+            begin = lastn
+
     # Do some range checking
     if f > _log_cache[127] or f <= 0:
         return 128
 
     # Binary search related algorithm to find the index
     while begin != end:
-        n = (begin + end) / 2 
+        n = (begin + end) / 2
         c = _log_cache[n]
         cp = _log_cache[n - 1] if n != 0 else 0
         if cp < f <= c:
             _last_asked = n, f
-            return n 
+            return n
 
         if f < c:
             end = n
@@ -106,7 +106,7 @@ Returns a list of tuples (frequency, amplitude). Data should only contain one ch
     # Generate the frequencies and zip with the amplitudes
     s = freq / float(n)
     freqArray = numpy.arange(0, uniquePts * s, s)
-    return zip(freqArray, p)
+    return list(zip(freqArray, p))
 
 
 def find_notes(freqTable, maxNote = 100):
@@ -133,8 +133,8 @@ def data_from_file(file):
     freq = fp.getframerate()
     bits = fp.getsampwidth()
 
-    # Unpack bytes -- 
-    #warning currently only tested with 16 bit wavefiles. 32 bit not supported. 
+    # Unpack bytes --
+    #warning currently only tested with 16 bit wavefiles. 32 bit not supported.
     data = struct.unpack("%sh" % fp.getnframes() * channels, data)
 
     # Only use first channel
@@ -142,7 +142,7 @@ def data_from_file(file):
     n = 0
     for d in data:
         if n % channels == 0:
-                channel1.append(d)
+            channel1.append(d)
         n += 1
 
     fp.close()

@@ -1,22 +1,22 @@
 """
 ================================================================================
 
-	pyFluidSynth
+        pyFluidSynth
 
-	Python bindings for FluidSynth
+        Python bindings for FluidSynth
 
-	Copyright 2008-2009, Nathan Whitehead <nwhitehe@gmail.com>
-	Currently maintained by Bart Spaans <onderstekop@gmail.com>
-	Released under the LGPL
+        Copyright 2008-2009, Nathan Whitehead <nwhitehe@gmail.com>
+        Currently maintained by Bart Spaans <onderstekop@gmail.com>
+        Released under the LGPL
 
-	This module contains python bindings for FluidSynth.  FluidSynth is a
-	software synthesizer for generating music.  It works like a MIDI
-	synthesizer.  You load patches, set parameters, then send NOTEON and
-	NOTEOFF events to play notes.  Instruments are defined in SoundFonts,
-	generally files with the extension SF2.  FluidSynth can either be used
-	to play audio itself, or you can call a function that returns chunks
-	of audio data and output the data to the soundcard yourself.
-	FluidSynth works on all major platforms, so pyFluidSynth should also.
+        This module contains python bindings for FluidSynth.  FluidSynth is a
+        software synthesizer for generating music.  It works like a MIDI
+        synthesizer.  You load patches, set parameters, then send NOTEON and
+        NOTEOFF events to play notes.  Instruments are defined in SoundFonts,
+        generally files with the extension SF2.  FluidSynth can either be used
+        to play audio itself, or you can call a function that returns chunks
+        of audio data and output the data to the soundcard yourself.
+        FluidSynth works on all major platforms, so pyFluidSynth should also.
 
 ================================================================================
 """
@@ -33,7 +33,7 @@ lib = find_library('fluidsynth') or find_library('libfluidsynth') or find_librar
 
 
 if lib is None:
-	raise ImportError, "Couldn't find the FluidSynth library."
+    raise ImportError("Couldn't find the FluidSynth library.")
 
 
 # Dynamically link the FluidSynth library
@@ -66,17 +66,17 @@ new_fluid_audio_driver = cfunc('new_fluid_audio_driver', c_void_p,
                                ('settings', c_void_p, 1),
                                ('synth', c_void_p, 1))
 
-fluid_settings_setstr = cfunc('fluid_settings_setstr', c_int, 
+fluid_settings_setstr = cfunc('fluid_settings_setstr', c_int,
                               ('settings', c_void_p, 1),
                               ('name', c_char_p, 1),
                               ('str', c_char_p, 1))
 
-fluid_settings_setnum = cfunc('fluid_settings_setnum', c_int, 
+fluid_settings_setnum = cfunc('fluid_settings_setnum', c_int,
                               ('settings', c_void_p, 1),
                               ('name', c_char_p, 1),
                               ('val', c_double, 1))
 
-fluid_settings_setint = cfunc('fluid_settings_setint', c_int, 
+fluid_settings_setint = cfunc('fluid_settings_setint', c_int,
                               ('settings', c_void_p, 1),
                               ('name', c_char_p, 1),
                               ('val', c_int, 1))
@@ -164,9 +164,9 @@ fluid_synth_write_s16 = cfunc('fluid_synth_write_s16', c_void_p,
 
 def fluid_synth_write_s16_stereo(synth, len):
     """Return generated samples in stereo 16-bit format
-    
+
     Return value is a Numpy array of samples.
-    
+
     """
     import numpy
     buf = create_string_buffer(len * 4)
@@ -214,7 +214,7 @@ class Synth:
 
         """
         if driver is not None:
-            assert (driver in ['alsa', 'oss', 'jack', 'portaudio', 'sndmgr', 'coreaudio', 'Direct Sound']) 
+            assert (driver in ['alsa', 'oss', 'jack', 'portaudio', 'sndmgr', 'coreaudio', 'Direct Sound'])
             fluid_settings_setstr(self.settings, 'audio.driver', driver)
         self.audio_driver = new_fluid_audio_driver(self.settings, self.synth)
     def delete(self):
@@ -233,19 +233,19 @@ class Synth:
         return fluid_synth_program_select(self.synth, chan, sfid, bank, preset)
     def noteon(self, chan, key, vel):
         """Play a note"""
-	if key < 0 or key > 128:
-		return False
-	if chan < 0:
-		return False
-	if vel < 0 or vel > 128:
-		return False
+        if key < 0 or key > 128:
+            return False
+        if chan < 0:
+            return False
+        if vel < 0 or vel > 128:
+            return False
         return fluid_synth_noteon(self.synth, chan, key, vel)
     def noteoff(self, chan, key):
         """Stop a note"""
-	if key < 0 or key > 128:
-		return False
-	if chan < 0:
-		return False
+        if key < 0 or key > 128:
+            return False
+        if chan < 0:
+            return False
         return fluid_synth_noteoff(self.synth, chan, key)
     def pitch_bend(self, chan, val):
         """Adjust pitch of a playing channel by small amounts
@@ -254,7 +254,7 @@ class Synth:
         A value of -2048 is 1 semitone down.
         A value of 2048 is 1 semitone up.
         Maximum values are -8192 to +8192 (transposing by 4 semitones).
-        
+
         """
         return fluid_synth_pitch_bend(self.synth, chan, val + 8192)
     def cc(self, chan, ctrl, val):
@@ -270,7 +270,7 @@ class Synth:
           64 : sustain
           91 : reverb
           93 : chorus
-        """ 
+        """
         return fluid_synth_cc(self.synth, chan, ctrl, val)
     def program_change(self, chan, prg):
         """Change the program"""
@@ -302,7 +302,7 @@ def raw_audio_string(data):
 
     Input is a numpy array of samples.  Default output format
     is 16-bit signed (other formats not currently supported).
-    
+
     """
     import numpy
     return (data.astype(numpy.int16)).tostring()

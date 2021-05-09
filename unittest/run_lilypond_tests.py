@@ -3,8 +3,8 @@
 
 ================================================================================
 
-	Music theory Python package, test suite
-	Copyright (C) 2008, Bart Spaans
+        Music theory Python package, test suite
+        Copyright (C) 2008, Bart Spaans
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -21,8 +21,8 @@
 
 ================================================================================
 
-	Separated fluidsynth tests. Remember: you need a running fluidsynth 
-	server process listening at port 9800 to pass this test.
+        Separated fluidsynth tests. Remember: you need a running fluidsynth
+        server process listening at port 9800 to pass this test.
 
 ================================================================================
 
@@ -35,4 +35,3 @@ import test_LilyPond
 suite = unittest.TestSuite([test_LilyPond.suite()])
 
 unittest.TextTestRunner(verbosity=2).run(suite)
-

@@ -22,7 +22,7 @@
 """
 
 from mingus.core import notes, intervals
-from mt_exceptions import NoteFormatError
+from .mt_exceptions import NoteFormatError
 from math import log
 
 
@@ -56,12 +56,12 @@ to group Notes together in intervals and chords."""
             self.set_note(name.name, name.octave, name.dynamics)
             self.channel = name.channel
             self.velocity = name.velocity
-        
+
         # Convert from integer
         elif type(name) == int:
             self.from_int(name)
         else:
-            raise NoteFormatError, "Don't know what to do with name object: '%s'" % name
+            raise NoteFormatError("Don't know what to do with name object: '%s'" % name)
 
         self.tie_together(tie_note)
 
@@ -98,7 +98,7 @@ to group Notes together in intervals and chords."""
         if self._tie_note:
             self._tie_note._is_tied = True
             self._tie_note._next_note = self
-        
+
 
     def set_note(self, name = 'C', octave = 4, dynamics = {}):
         """Sets the note to `name` in `octave` with `dynamics` if \
@@ -112,9 +112,8 @@ succeeded, raises an NoteFormatError otherwise."""
                 self.dynamics = dynamics
                 return self
             else:
-                raise NoteFormatError,\
-                    "The string '%s' is not a valid representation"\
-                    "of a note in mingus" % name
+                raise NoteFormatError("The string '%s' is not a valid representation"\
+                    "of a note in mingus" % name)
         elif len(dash_index) == 2:
             if notes.is_valid_note(dash_index[0]):
                 self.name = dash_index[0]
@@ -122,9 +121,8 @@ succeeded, raises an NoteFormatError otherwise."""
                 self.dynamics = dynamics
                 return self
             else:
-                raise NoteFormatError,\
-                    "The string '%s' is not a valid representation"\
-                    "of a note in mingus" % name
+                raise NoteFormatError("The string '%s' is not a valid representation"\
+                    "of a note in mingus" % name)
         return False
 
     def empty(self):
@@ -136,7 +134,7 @@ succeeded, raises an NoteFormatError otherwise."""
     def augment(self):
         """Calls notes.augment with this note as argument"""
         self.name = notes.augment(self.name)
-    
+
     def diminish(self):
         """Calls notes.diminish with this note as argument"""
         self.name = notes.diminish(self.name)
@@ -170,7 +168,7 @@ Doesn't change the octave."""
         self.name = notes.remove_redundant_accidentals(self.name)
 
     def transpose(self, interval, up = True):
-        """Transposes the note up or down the interval. 
+        """Transposes the note up or down the interval.
 {{{
 >>> a = Note("A")
 >>> a.transpose("3")
@@ -199,7 +197,7 @@ Doesn't change the octave."""
 
     def from_int(self, integer):
         """Sets the Note corresponding to the integer. 0 is a C on octave 0, \
-12 is a C on octave 1, etc. 
+12 is a C on octave 1, etc.
 {{{
 >>> c = Note()
 >>> c.from_int(12)
@@ -207,18 +205,18 @@ Doesn't change the octave."""
 'C-1'
 }}}"""
         self.name = notes.int_to_note(integer % 12)
-        self.octave = integer / 12
+        self.octave = int(integer / 12)
         return self
 
-        def measure(self, other):
-                """Returns the number of semitones between this Note and the other.
+    def measure(self, other):
+        """Returns the number of semitones between this Note and the other.
 {{{
 >>> Note("C").measure(Note("D"))
 2
 >>> Note("D").measure(Note("C"))
 -2
 }}}"""
-                return int(other) - int(self)
+        return int(other) - int(self)
 
     def to_hertz(self, standard_pitch = 440):
         """Returns the Note in Hz. The `standard_pitch` argument can be used \
@@ -237,8 +235,8 @@ which the rest is calculated."""
         self.name = notes.int_to_note(int(value) % 12)
         self.octave = int(value / 12) + 4
 
-        def to_shorthand(self):
-                """Gives the traditional Helmhotz pitch notation.\
+    def to_shorthand(self):
+        """Gives the traditional Helmhotz pitch notation.\
 {{{
 >>> Note("C-4").to_shorthand()
 "c'"
@@ -249,22 +247,22 @@ which the rest is calculated."""
 >>> Note("C-1").to_shorthand()
 'C,'
 }}}"""
-                if self.octave < 3:
-                        res = self.name
-                else:
-                        res = str.lower(self.name)
+        if self.octave < 3:
+            res = self.name
+        else:
+            res = str.lower(self.name)
 
-                o = self.octave - 3
-                while o < -1:
-                        res += ","
-                        o += 1
-                while o > 0:
-                        res += "'"
-                        o -= 1
-                return res
+        o = self.octave - 3
+        while o < -1:
+            res += ","
+            o += 1
+        while o > 0:
+            res += "'"
+            o -= 1
+        return res
 
-        def from_shorthand(self, shorthand):
-                """Convert from traditional Helmhotz pitch notation.\
+    def from_shorthand(self, shorthand):
+        """Convert from traditional Helmhotz pitch notation.\
 {{{
 >>> Note().from_shorthand("C,,")
 'C-0'
@@ -273,22 +271,22 @@ which the rest is calculated."""
 >>> Note().from_shorthand("c'")
 'C-4'
 }}}"""
-                name = ""
-                octave = 0
-                for x in shorthand:
-                        if x in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
-                                name = str.upper(x)
-                                octave = 3
-                        elif x in ['A', 'B', 'C', 'D', 'E', 'F', 'G']:
-                                name = x
-                                octave = 2
-                        elif x in ["#", "b"]:
-                                name += x
-                        elif x == ',':
-                                octave -= 1
-                        elif x == "'":
-                                octave += 1
-                return self.set_note(name, octave, {})
+        name = ""
+        octave = 0
+        for x in shorthand:
+            if x in ['a', 'b', 'c', 'd', 'e', 'f', 'g']:
+                name = str.upper(x)
+                octave = 3
+            elif x in ['A', 'B', 'C', 'D', 'E', 'F', 'G']:
+                name = x
+                octave = 2
+            elif x in ["#", "b"]:
+                name += x
+            elif x == ',':
+                octave -= 1
+            elif x == "'":
+                octave += 1
+        return self.set_note(name, octave, {})
 
 
     def __int__(self):
@@ -301,14 +299,14 @@ returns 12, etc. This method allows you to use int() on Notes."""
                 res += 1
             elif n== 'b':
                 res -= 1
-        return res
-            
+        return int(res)
+
 
     def __cmp__(self, other):
         """This method allows you to use the comparing operators \
 on Notes (>, <, ==, !=, >= and <=). So we can sort() Intervals, etc.
 {{{
->>> Note("C", 4) < Note("B", 4) 
+>>> Note("C", 4) < Note("B", 4)
 True
 >>> Note("C", 4) > Note("B", 4)
 False
@@ -324,6 +322,24 @@ False
             return 1
         else:
             return 0
+
+    def __eq__(self, other):
+        return self.__cmp__(other) == 0
+
+    def __ne__(self, other):
+        return self.__cmp__(other) != 0
+
+    def __gt__(self, other):
+        return self.__cmp__(other) > 0
+
+    def __lt__(self, other):
+        return self.__cmp__(other) < 0
+
+    def __ge__(self, other):
+        return self.__cmp__(other) >= 0
+
+    def __le__(self, other):
+        return self.__cmp__(other) <= 0
 
     def __repr__(self):
         """A helpful representation for printing Note classes"""
